@@ -1,4 +1,4 @@
-/** 
+/** Showmejson
  * @author Roimer Garcia
  *      contact roimergarica@gmail.com
  *      source available in https://github.com/roimergarcia/showmejson
