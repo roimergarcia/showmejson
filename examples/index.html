@@ -7,12 +7,29 @@
     <title>Showmejson test page</title>
 </head>
 <body>
+
+    <div id="output">
+
+    </div>
     
     <script type="module">
         import { showmejson } from "/dist/showmejson.min.js";
 
         console.log(showmejson);
-        console.log( showmejson.getFragment({OK: true, date: new Date}) );
+        const obj = {
+            OK: true,
+            OK: true,
+            date: new Date
+        };
+
+        const output = document.querySelector('#output');
+
+        output.append(showmejson.getFragment('Long text test\nwith two lines'));
+        output.append(showmejson.getFragment(42.5));
+        output.append(showmejson.getFragment(false));
+        output.append(showmejson.getFragment(null));
+        output.append(showmejson.getFragment(undefined));
+        //output.append(showmejson.getFragment(new Symbol()));
 
     </script>
 </body>

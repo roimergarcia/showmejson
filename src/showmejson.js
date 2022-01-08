@@ -18,18 +18,26 @@ const showmejson = {
      * @returns 
      */
     getFragment: function(obj){
-
+        console.log(typeof obj)
         const fragment = document.createDocumentFragment();
 
         const part = document.createElement('div');
-        part.textContent = '' + obj;
 
-        fragment.append(part);
-        
-        return {
-            'OK': true, 
-            fragment
+        if ( typeof obj === 'string' ){
+
+            const singleValue = document.createElement('pre');
+            singleValue.textContent =JSON.stringify(obj).replace(/(\\n|\\r)/g, '$1\n');
+
+            part.append(singleValue);
+            fragment.append(part);
+            return fragment;
+        } else if ( ['boolean', 'number', 'null', 'undefined', 'symbol'].includes(typeof obj)){
+            part.textContent = '' + obj;
+            fragment.append(part);
+            return fragment;
         }
+        
+        return fragment
 
     }
 };
