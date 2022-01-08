@@ -9,9 +9,10 @@
 <body>
     
     <script type="module">
-        import { showmejson } from "/src/showmejson.js";
+        import { showmejson } from "/dist/showmejson.min.js";
 
         console.log(showmejson);
+        console.log( showmejson.getFragment({OK: true, date: new Date}) );
 
     </script>
 </body>

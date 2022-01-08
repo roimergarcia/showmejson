@@ -1,3 +1,5 @@
 {
-    "type": "module"
+    "type": "module",
+    "files": ["/src"],
+    "include": ["./dist"]
 }
