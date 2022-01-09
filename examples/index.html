@@ -16,20 +16,28 @@
         import { showmejson } from "/dist/showmejson.min.js";
 
         console.log(showmejson);
-        const obj = {
-            OK: true,
-            OK: true,
-            date: new Date
-        };
-
         const output = document.querySelector('#output');
 
-        output.append(showmejson.getFragment('Long text test\nwith two lines'));
-        output.append(showmejson.getFragment(42.5));
-        output.append(showmejson.getFragment(false));
-        output.append(showmejson.getFragment(null));
-        output.append(showmejson.getFragment(undefined));
-        //output.append(showmejson.getFragment(new Symbol()));
+        // output.append(showmejson.getFragment('Long text test\nwith two lines'));
+        // output.append(showmejson.getFragment(42.5));
+        // output.append(showmejson.getFragment(false));
+        // output.append(showmejson.getFragment(null));
+        // output.append(showmejson.getFragment(undefined));
+        // output.append(showmejson.getFragment(Symbol('test symbol')));
+
+        
+        const obj = {
+            longText: 'Long text test\nwith two lines',
+            numeric: 42.5,
+            isActive: false,
+            nullValue: null,
+            valueNotDefined: undefined,
+            symbolValue: Symbol('test symbol'),
+            objectValue: { a: 1, b: false, c: new Date()}
+        }
+        
+        output.append(showmejson.getFragment(obj));
+        
 
     </script>
 </body>
