@@ -56,11 +56,11 @@ const showmejson = (function(){
      * Returns and HTML representation of an object, in the form of a DocumentFragment.
      * @param {Object} obj - Object to be rendered as html
      * @param {Object} options - Rendering options
-     * @param {boolean} options.includeStyles - Sets if sould include the default Stylesheet
+     * @param {boolean} options.includeStyles - Sets if should include the default Stylesheet
+     * @param {number} options.maxDepth - Sets how depth to search for sub-objects to render
      * @returns 
      */
     const getFragment =  function(obj, options){
-        console.log(typeof obj)
 
         //Apply user defined options
         const opt = Object.assign({}, defaultOptions, options);
@@ -76,8 +76,8 @@ const showmejson = (function(){
             container.append(styles);
         }
 
-        renderItem(container, opt.maxDepth - 1, obj, '');
-
+        renderItem(container, opt.maxDepth, obj, '');
+        
         fragment.append(container);
         
         return fragment
@@ -132,19 +132,19 @@ const showmejson = (function(){
             //singleValue.textContent = (name?name+':':'') + `${JSON.stringify(obj[value]).substring(0, 30) + '...'}`;
             singleValue.textContent = (name?name+':':'') + typeof obj;
 
-            block.append(singleValue);
+            container.append(singleValue);
+            return
         }
 
         //Handles objects  
         const block = document.createElement('details');
         const summary = document.createElement('summary');
-        summary.textContent = (name?name: `[${typeof obj}]`) // (name?name+':':'') + `[${typeof obj}]`;
+        summary.textContent = (name? name: `[${typeof obj}]`);
         block.open = !name; //unnamed objects are open by default
         block.append(summary);
 
         const props = Object.getOwnPropertyNames(obj);
         props.forEach( (value, index, array) => {
-            console.log({n:value, v:obj[value], t:typeof obj[value]})
 
             renderItem(block, remainingDepth - 1, obj[value], value);
 
@@ -157,7 +157,6 @@ const showmejson = (function(){
     return {
         getFragment
     }
-
 
 })();
 
