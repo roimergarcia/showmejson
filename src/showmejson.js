@@ -45,7 +45,7 @@ const showmejson = (function(){
     }
     .showmejson summary {
         margin: calc( - var(--smj-spacing)) ;
-        padding: var(--smj-spacing);
+        padding: var(--smj-spacing) var(--smj-spacing) var(--smj-spacing) 0;
     }
     .showmejson .details[open] summary{
         display: none;
@@ -94,7 +94,7 @@ const showmejson = (function(){
      */
     const renderItem = function(container, remainingDepth, obj, name){
         
-        //Handles single values...
+        //Handles primitives/simple values...
         if ( typeof obj === 'string' ){
 
             const singleValue = document.createElement('pre');
@@ -117,6 +117,13 @@ const showmejson = (function(){
             singleValue.textContent = (name?name+':':'') + obj.toString();
             container.append(singleValue);
             return
+
+        } else if ( obj instanceof Date){
+
+            const singleValue = document.createElement('div');
+            singleValue.textContent = (name?name+':':'') + obj.toISOString();
+            container.append(singleValue);
+            return
         }
 
         // If it is an object, and we are too depth: stop and print it
@@ -131,7 +138,7 @@ const showmejson = (function(){
         //Handles objects  
         const block = document.createElement('details');
         const summary = document.createElement('summary');
-        summary.textContent = (name?name+':':'') + `[${typeof obj}]`;
+        summary.textContent = (name?name: `[${typeof obj}]`) // (name?name+':':'') + `[${typeof obj}]`;
         block.open = !name; //unnamed objects are open by default
         block.append(summary);
 
