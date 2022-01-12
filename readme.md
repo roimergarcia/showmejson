@@ -1,7 +1,7 @@
 # Showmejson (v0.1)
 Es una pequeña utilidad para visualizar un objeto Javascript en un formato _similar_ a JSON, usando html.
 
-```
+``` javascript
 import { showmejson } from "/dist/showmejson.min.js";
 
 //Test object to render:
