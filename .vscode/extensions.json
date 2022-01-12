@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "dbaeumer.vscode-eslint",
+        "olback.es6-css-minify",
+        "ritwickdey.liveserver"
+    ]
+}

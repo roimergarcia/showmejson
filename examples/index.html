@@ -33,7 +33,8 @@
             nullValue: null,
             valueNotDefined: undefined,
             symbolValue: Symbol('test symbol'),
-            objectValue: { a: 1, b: false, c: new Date()}
+            objectValue: { a: 1, b: false, c: new Date()},
+            otherValue: { x: 1234567890.987, y: 'string variable!', z: new Date()}
         }
         
         output.append(showmejson.getFragment(obj));
