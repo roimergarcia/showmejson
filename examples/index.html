@@ -33,11 +33,14 @@
             nullValue: null,
             valueNotDefined: undefined,
             symbolValue: Symbol('test symbol'),
-            objectValue: { a: 1, b: false, c: new Date()},
-            otherValue: { x: 1234567890.987, y: 'string variable!', z: new Date()}
+            objectValue: { a: 1, b: false, c: new Date(2022, 1, 17)},
+            otherValue: { x: 1234567890.987, 
+                y: { name: 'myName', value: 'MyValue' }, 
+                z: 'string variable!'
+            }
         }
         
-        output.append(showmejson.getFragment(obj));
+        output.append(showmejson.getFragment(obj, { includeStyles:true, maxDepth: 3  } ));
         
 
     </script>
