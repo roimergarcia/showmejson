@@ -41,17 +41,40 @@ const showmejson = (function(){
         border: 1px solid #aaa;
         border-radius: 4px;
         padding: var(--smj-spacing);
-        margin: var(--smj-spacing);
+        margin: var(--smj-spacing) 0;
     }
     .showmejson summary {
         margin: calc( - var(--smj-spacing)) ;
-        padding: var(--smj-spacing) var(--smj-spacing) var(--smj-spacing) 0;
+        padding: 0;
+        cursor: pointer;
     }
-    .showmejson .details[open] summary{
-        display: none;
+    .showmejson .showmejson__single-item{
+        display: flex;
+        gap: 1rem;
+        margin: 0.5em 0px;
+        font-family: monospace, monospace;
+        white-space: pre;
+    }
+    .showmejson .showmejson__value--text{
+        color: #080;
+    }
+    .showmejson .showmejson__value--number, 
+    .showmejson .showmejson__value--symbol{
+        color: #FF4488;
+    } 
+    .showmejson .showmejson__value--date{
+        color: #0033FF;
+    }
+    .showmejson .showmejson__value--nothing{
+        color: #6B548C;
+        font-style: oblique;
+    }
+    .showmejson .showmejson__value--symbol, 
+    .showmejson .showmejson__value--object{
+        color: #804040;
     }
     `;
-
+    
     /**
      * Returns and HTML representation of an object, in the form of a DocumentFragment.
      * @param {Object} obj - Object to be rendered as html
@@ -97,9 +120,19 @@ const showmejson = (function(){
         //Handles primitives/simple values...
         if ( typeof obj === 'string' ){
 
-            const singleValue = document.createElement('pre');
-            singleValue.classList.add('showmejson__plain-text');
-            singleValue.textContent = (name?name+':':'') + `${JSON.stringify(obj).replace(/(\\n|\\r)/g, '$1\n')}`;
+            const singleValue = document.createElement('div');
+            //singleValue.classList.add();
+            singleValue.classList.add('showmejson__single-item');
+
+            const n = document.createElement('span');
+            n.classList.add('showmejson__label');
+            n.textContent = name? name+':': '';
+            singleValue.append(n);
+            
+            const v = document.createElement('span');
+            v.classList.add('showmejson__value', 'showmejson__value--text');
+            v.textContent = `${JSON.stringify(obj).replace(/(\\n|\\r)/g, '$1\n')}`;
+            singleValue.append(v);
 
             container.append(singleValue);
             return 
@@ -107,36 +140,80 @@ const showmejson = (function(){
         } else if ( obj === null || ['boolean', 'number', 'null', 'undefined'].includes(typeof obj)){
 
             const singleValue = document.createElement('div');
-            singleValue.textContent = (name?name+':':'') + obj;
+            singleValue.classList.add('showmejson__single-item');
+
+            const n = document.createElement('span');
+            n.classList.add('showmejson__label');
+            n.textContent = name? name+':': '';
+            singleValue.append(n);
+            
+            const v = document.createElement('span');
+            v.classList.add('showmejson__value', 'showmejson__value--number');
+            v.textContent = '' + obj;
+            singleValue.append(v);
+
+            //singleValue.textContent = (name?name+':':'') + obj;
             container.append(singleValue);
             return
 
         } else if ( typeof obj === 'symbol'){
 
             const singleValue = document.createElement('div');
-            singleValue.textContent = (name?name+':':'') + obj.toString();
+            singleValue.classList.add('showmejson__single-item');
+
+            const n = document.createElement('span');
+            n.classList.add('showmejson__label');
+            n.textContent = name? name+':': '';
+            singleValue.append(n);
+            
+            const v = document.createElement('span');
+            v.classList.add('showmejson__value', 'showmejson__value--symbol');
+            v.textContent = obj.toString();
+            singleValue.append(v);
+
+            //singleValue.textContent = (name?name+':':'') + obj.toString();
             container.append(singleValue);
             return
 
         } else if ( obj instanceof Date){
 
             const singleValue = document.createElement('div');
-            singleValue.textContent = (name?name+':':'') + obj.toISOString();
+            singleValue.classList.add('showmejson__single-item');
+
+            const n = document.createElement('span');
+            n.classList.add('showmejson__label');
+            n.textContent = name? name+':': '';
+            singleValue.append(n);
+            
+            const v = document.createElement('span');
+            v.classList.add('showmejson__value', 'showmejson__value--date');
+            v.textContent = obj.toISOString();
+            singleValue.append(v);
+
             container.append(singleValue);
             return
         }
 
         // If it is an object, and we are too depth: stop and print it
         if( remainingDepth === 0){
-            const singleValue = document.createElement('pre');
-            //singleValue.textContent = (name?name+':':'') + `${JSON.stringify(obj[value]).substring(0, 30) + '...'}`;
-            singleValue.textContent = (name?name+':':'') + typeof obj;
+            const singleValue = document.createElement('div');
+            singleValue.classList.add('showmejson__single-item');
 
+            const n = document.createElement('span');
+            n.classList.add('showmejson__label');
+            n.textContent = name? name+':': '';
+            singleValue.append(n);
+            
+            const v = document.createElement('span');
+            v.classList.add('showmejson__value', 'showmejson__value--object');
+            v.textContent = typeof obj + ' {...}';
+            singleValue.append(v);
+            
             container.append(singleValue);
             return
         }
 
-        //Handles objects  
+        //Handles objects: renders a header and then each property  
         const block = document.createElement('details');
         const summary = document.createElement('summary');
         summary.textContent = (name? name: `[${typeof obj}]`);
