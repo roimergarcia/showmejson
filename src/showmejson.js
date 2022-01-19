@@ -34,47 +34,53 @@ const showmejson = (function(){
         border: 1px solid var(--smj-border-color);
         border-radius: var(--smj-border-radius);
     }
-    .showmejson > details {
-        margin: 0;
-    }
     .showmejson details {
-        border: 1px solid #aaa;
+        border: 1px solid #AAAAAA;
         border-radius: 4px;
         padding: var(--smj-spacing);
         margin: var(--smj-spacing) 0;
     }
-    .showmejson summary {
+    .showmejson > details {
+        margin: 0;
+    }
+    .showmejson details summary {
         margin: calc( - var(--smj-spacing)) ;
         padding: 0;
         cursor: pointer;
     }
-    .showmejson .showmejson__single-item{
+    .showmejson details[open] > summary {
+        padding-bottom: 2px;
+        border-bottom: 1px solid var(--smj-border-color);
+    }
+    .showmejson .showmejson__single-item {
         display: flex;
         gap: 1rem;
         margin: 0.5em 0px;
         font-family: monospace, monospace;
         white-space: pre;
     }
-    .showmejson .showmejson__value--text{
-        color: #080;
+    .showmejson .showmejson__value--text {
+        color: #008800;
     }
-    .showmejson .showmejson__value--number, 
-    .showmejson .showmejson__value--symbol{
-        color: #FF4488;
-    } 
-    .showmejson .showmejson__value--date{
+    .showmejson .showmejson__value--number {
         color: #0033FF;
+    } 
+    .showmejson .showmejson__value--boolean {
+        color: #CC00FF;
+    } 
+    .showmejson .showmejson__value--date {
+        color: #FF4488;
     }
-    .showmejson .showmejson__value--nothing{
+    .showmejson .showmejson__value--nothing {
         color: #6B548C;
         font-style: oblique;
     }
     .showmejson .showmejson__value--symbol, 
-    .showmejson .showmejson__value--object{
+    .showmejson .showmejson__value--object {
         color: #804040;
     }
     `;
-    
+
     /**
      * Returns and HTML representation of an object, in the form of a DocumentFragment.
      * @param {Object} obj - Object to be rendered as html
@@ -117,108 +123,85 @@ const showmejson = (function(){
      */
     const renderItem = function(container, remainingDepth, obj, name){
         
-        //Handles primitives/simple values...
-        if ( typeof obj === 'string' ){
+        let objType = typeof obj;
+        if ( obj === null ){
+            objType = 'null';
+        } else if ( objType === 'object' ) {
+            objType = obj.constructor.name;
+        }
+        
+        //console.log({objType, obj})
+
+        if ( remainingDepth === 0 ||
+             ['string', 'number', 'boolean', 'null', 
+              'undefined', 'symbol', 'date'].includes(objType.toLowerCase()) ){
 
             const singleValue = document.createElement('div');
-            //singleValue.classList.add();
             singleValue.classList.add('showmejson__single-item');
 
-            const n = document.createElement('span');
-            n.classList.add('showmejson__label');
-            n.textContent = name? name+':': '';
-            singleValue.append(n);
+            const itemName = document.createElement('span');
+            itemName.classList.add('showmejson__label');
+            itemName.textContent = name? name+':': '';
+            singleValue.append(itemName);
             
-            const v = document.createElement('span');
-            v.classList.add('showmejson__value', 'showmejson__value--text');
-            v.textContent = `${JSON.stringify(obj).replace(/(\\n|\\r)/g, '$1\n')}`;
-            singleValue.append(v);
+            const itemVal = document.createElement('span');
+            itemVal.classList.add('showmejson__value');
+            switch (objType) {
+                case 'string':
+                case 'String':
+                    itemVal.classList.add('showmejson__value--text');
+                    itemVal.textContent = `${JSON.stringify(obj).replace(/(\\n|\\r)/g, '$1\n')}`;
+                    break;
+                    
+                case 'number':
+                case 'Number':
+                    itemVal.classList.add('showmejson__value--number');
+                    itemVal.textContent = obj.toString();
+                    break;
+            
+                case 'boolean':
+                case 'Boolean':
+                    itemVal.classList.add('showmejson__value--boolean');
+                    itemVal.textContent = obj.toString();
+                    break;
+                     
+                case 'null':
+                case 'undefined':
+                    itemVal.classList.add('showmejson__value--nothing');
+                    itemVal.textContent = '' + obj;
+                    break;
+            
+                case 'symbol':
+                case 'Symbol':
+                    itemVal.classList.add('showmejson__value--symbol');
+                    itemVal.textContent = obj.toString();
+                    break;
+                    
+                case 'Date':
+                    itemVal.classList.add('showmejson__value--date');
+                    itemVal.textContent = obj.toISOString();
+                    break;
+            
+                default: //It's an object, but it's already too depht to be showen
+                    itemVal.classList.add('showmejson__value--object');
+                    itemVal.textContent = objType + ' {...}';
+                    break;
+            }
+            singleValue.append(itemVal);
 
             container.append(singleValue);
             return 
 
-        } else if ( obj === null || ['boolean', 'number', 'null', 'undefined'].includes(typeof obj)){
-
-            const singleValue = document.createElement('div');
-            singleValue.classList.add('showmejson__single-item');
-
-            const n = document.createElement('span');
-            n.classList.add('showmejson__label');
-            n.textContent = name? name+':': '';
-            singleValue.append(n);
-            
-            const v = document.createElement('span');
-            v.classList.add('showmejson__value', 'showmejson__value--number');
-            v.textContent = '' + obj;
-            singleValue.append(v);
-
-            //singleValue.textContent = (name?name+':':'') + obj;
-            container.append(singleValue);
-            return
-
-        } else if ( typeof obj === 'symbol'){
-
-            const singleValue = document.createElement('div');
-            singleValue.classList.add('showmejson__single-item');
-
-            const n = document.createElement('span');
-            n.classList.add('showmejson__label');
-            n.textContent = name? name+':': '';
-            singleValue.append(n);
-            
-            const v = document.createElement('span');
-            v.classList.add('showmejson__value', 'showmejson__value--symbol');
-            v.textContent = obj.toString();
-            singleValue.append(v);
-
-            //singleValue.textContent = (name?name+':':'') + obj.toString();
-            container.append(singleValue);
-            return
-
-        } else if ( obj instanceof Date){
-
-            const singleValue = document.createElement('div');
-            singleValue.classList.add('showmejson__single-item');
-
-            const n = document.createElement('span');
-            n.classList.add('showmejson__label');
-            n.textContent = name? name+':': '';
-            singleValue.append(n);
-            
-            const v = document.createElement('span');
-            v.classList.add('showmejson__value', 'showmejson__value--date');
-            v.textContent = obj.toISOString();
-            singleValue.append(v);
-
-            container.append(singleValue);
-            return
         }
-
-        // If it is an object, and we are too depth: stop and print it
-        if( remainingDepth === 0){
-            const singleValue = document.createElement('div');
-            singleValue.classList.add('showmejson__single-item');
-
-            const n = document.createElement('span');
-            n.classList.add('showmejson__label');
-            n.textContent = name? name+':': '';
-            singleValue.append(n);
-            
-            const v = document.createElement('span');
-            v.classList.add('showmejson__value', 'showmejson__value--object');
-            v.textContent = typeof obj + ' {...}';
-            singleValue.append(v);
-            
-            container.append(singleValue);
-            return
-        }
-
+ 
         //Handles objects: renders a header and then each property  
         const block = document.createElement('details');
         const summary = document.createElement('summary');
-        summary.textContent = (name? name: `[${typeof obj}]`);
+        summary.textContent = (name? name + ' ': '') + `[${objType}]`;
         block.open = !name; //unnamed objects are open by default
         block.append(summary);
+
+        container.append(block);
 
         const props = Object.getOwnPropertyNames(obj);
         props.forEach( (value, index, array) => {
@@ -226,8 +209,6 @@ const showmejson = (function(){
             renderItem(block, remainingDepth - 1, obj[value], value);
 
         });
-
-        container.append(block);
 
     }
 

@@ -25,7 +25,11 @@
         // output.append(showmejson.getFragment(undefined));
         // output.append(showmejson.getFragment(Symbol('test symbol')));
 
-        
+        const Person = function(name, age){ 
+            this.name = name; 
+            this.age = age; 
+        }
+
         const obj = {
             longText: 'Long text test\nwith two lines',
             numeric: 42.5,
@@ -37,7 +41,8 @@
             otherValue: { x: 1234567890.987, 
                 y: { name: 'myName', value: 'MyValue' }, 
                 z: 'string variable!'
-            }
+            },
+            owner: new Person('Juan Carlos', 29)
         }
         
         output.append(showmejson.getFragment(obj, { includeStyles:true, maxDepth: 2  } ));
