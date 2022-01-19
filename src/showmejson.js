@@ -20,7 +20,11 @@ const showmejson = (function(){
         /**
          * Sets the maiximun depth for rendering sub objects.
          */
-        maxDepth: 10
+        maxDepth: 10,
+        /**
+         * Sets how should add colors, according to each value type
+         */
+        addColor: true
     }
 
     const DEFAULT_STYLES = ` 
@@ -59,24 +63,24 @@ const showmejson = (function(){
         font-family: monospace, monospace;
         white-space: pre;
     }
-    .showmejson .showmejson__value--text {
+    .showmejson.showmejson--add-color .showmejson__value--text {
         color: #008800;
     }
-    .showmejson .showmejson__value--number {
+    .showmejson.showmejson--add-color .showmejson__value--number {
         color: #0033FF;
     } 
-    .showmejson .showmejson__value--boolean {
+    .showmejson.showmejson--add-color .showmejson__value--boolean {
         color: #CC00FF;
     } 
-    .showmejson .showmejson__value--date {
+    .showmejson.showmejson--add-color .showmejson__value--date {
         color: #FF4488;
     }
-    .showmejson .showmejson__value--nothing {
+    .showmejson.showmejson--add-color .showmejson__value--nothing {
         color: #6B548C;
         font-style: oblique;
     }
-    .showmejson .showmejson__value--symbol, 
-    .showmejson .showmejson__value--object {
+    .showmejson.showmejson--add-color .showmejson__value--symbol, 
+    .showmejson.showmejson--add-color .showmejson__value--object {
         color: #804040;
     }
     `;
@@ -87,6 +91,7 @@ const showmejson = (function(){
      * @param {Object} options - Rendering options
      * @param {boolean} options.includeStyles - Sets if should include the default Stylesheet
      * @param {number} options.maxDepth - Sets how depth to search for sub-objects to render
+     * @param {number} options.addColor - Sets how should add colors, according to each value type
      * @returns 
      */
     const getFragment =  function(obj, options){
@@ -99,6 +104,9 @@ const showmejson = (function(){
         const container = document.createElement('div');
         container.classList.add('showmejson');
 
+        if ( opt.addColor ){
+            container.classList.add('showmejson--add-color');
+        }
         if( opt.includeStyles ){
             const styles = document.createElement('style');
             styles.innerHTML = DEFAULT_STYLES;
