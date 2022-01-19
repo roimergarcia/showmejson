@@ -48,12 +48,13 @@ const showmejson = (function(){
         margin: 0;
     }
     .showmejson details summary {
+        font-family: monospace, monospace;
         margin: calc( - var(--smj-spacing)) ;
         padding: 0;
         cursor: pointer;
     }
     .showmejson details[open] > summary {
-        padding-bottom: 2px;
+        padding-bottom: 4px;
         border-bottom: 1px solid var(--smj-border-color);
     }
     .showmejson .showmejson__single-item {
